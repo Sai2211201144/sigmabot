@@ -1,41 +1,13 @@
-# Node.js Dependencies
-# This folder contains all the downloaded packages. It's huge and can be
-# perfectly recreated by running `npm install`. It MUST be ignored.
+# Node.js
 /node_modules
 
-# Session Data & Sensitive Files
-# This is critical for security. Your Instagram session file acts like a password.
-# NEVER commit it to GitHub.
+# Session Data (SECURITY)
 ig-session.json
 
-# Environment Variables
-# If you ever decide to use a .env file for local testing, this will prevent it
-# from being committed. Credentials should always be in GitHub Secrets.
+# Environment & Logs
 .env
-.env.*
-
-# Logs
-# Ignore log files generated during runs or by npm on errors.
 npm-debug.log*
-yarn-debug.log
-yarn-error.log
-*.log
 
-# Temporary Image Output
-# If your script ever saves the generated image locally before posting,
-# this will ignore it.
-*.jpeg
-*.jpg
-*.png
-
-# Operating System Files
-# Ignore junk files created by macOS, Windows, and Linux.
+# OS files
 .DS_Store
 Thumbs.db
-._*
-ehthumbs.db
-
-# IDE/Editor Configuration
-# Ignore user-specific settings from editors like VS Code.
-.vscode/
-.idea/
