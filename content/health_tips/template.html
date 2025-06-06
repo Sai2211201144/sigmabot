@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { margin: 0; font-family: 'Lato', sans-serif; background-color: #f0f7f0; }
+    .container { width: 1080px; height: 1080px; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+    .background { width: 100%; height: 100%; object-fit: cover; position: absolute; filter: brightness(0.7) saturate(1.2); }
+    .content { position: relative; z-index: 2; color: white; padding: 80px; background-color: rgba(0, 90, 50, 0.6); border-radius: 15px; }
+    .title { font-size: 72px; font-weight: 700; line-height: 1.25; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
+    .subtitle { display: none; } /* We don't need a subtitle for health tips */
+    .watermark { position: absolute; bottom: 20px; color: rgba(255, 255, 255, 0.7); font-size: 20px; font-weight: bold; z-index: 3; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <img class="background" src="IMAGE_URL_PLACEHOLDER" />
+    <div class="content">
+      <p class="title">TITLE_PLACEHOLDER</p>
+    </div>
+    <div class="watermark">@thesigmacodex1</div>
+  </div>
+</body>
+</html>
