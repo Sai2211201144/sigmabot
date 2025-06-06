@@ -20,11 +20,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Fix Permissions for Puppeteer
-        run: chmod +x ./node_modules/.bin/puppeteer
-
-      - name: Install Puppeteer Browsers
-        run: npx puppeteer browsers install chrome
+      - name: Install and cache Puppeteer browser
+        # This is the correct, working step.
+        uses: puppeteer-headful/tools-action@v1
+        with:
+          puppeteer-version: 'latest'
 
       - name: Run the Post Script
         run: node index.js
