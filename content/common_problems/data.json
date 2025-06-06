@@ -1,0 +1,16 @@
+[
+  {
+    "slides": [
+      { "type": "title", "text": "Struggling with Poor Sleep?" },
+      { "type": "point", "heading": "Solution #1", "text": "Create a 'wind-down' routine. For 30 mins before bed, turn off all screens. Read a book, listen to calm music, or do light stretching." },
+      { "type": "point", "heading": "Solution #2", "text": "Optimize your room environment. Make it cool, dark, and quiet. Blackout curtains and a white noise machine can be game-changers." }
+    ]
+  },
+  {
+    "slides": [
+      { "type": "title", "text": "Feeling Unproductive in the Morning?" },
+      { "type": "point", "heading": "Solution #1", "text": "Prepare the night before. Lay out your clothes, pack your bag, and write a to-do list for the next day. This removes morning friction." },
+      { "type": "point", "heading": "Solution #2", "text": "The '5-Minute Rule'. If a task takes less than 5 minutes, do it immediately. This builds momentum and clears small tasks quickly." }
+    ]
+  }
+] 

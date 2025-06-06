@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Interview Prep Tracker | Zero Rejection System</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --primary-color: #4285F4; /* Google Blue */
+            --green-accent: #34A853; /* Google Green */
+            --yellow-accent: #FBBC05; /* Google Yellow */
+            --red-accent: #EA4335; /* Google Red */
+            --text-color: #e0e0e0;
+            --text-muted: #888;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--surface-color);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #333;
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        header p {
+            margin: 0.2rem 0 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        #progress-bar-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 10px;
+            background-color: var(--green-accent);
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        #progress-text {
+            font-size: 0.8rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: var(--surface-color);
+            padding: 1rem;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            padding: 0.75rem 0.5rem;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar li .day-title {
+            opacity: 0.8;
+        }
+
+        .sidebar li:hover {
+            background-color: #2c2c2c;
+        }
+
+        .sidebar li.active {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .sidebar li.active .day-title {
+            opacity: 1;
+        }
+
+        .sidebar li.completed .day-title {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .sidebar li.completed::after {
+            content: '✔';
+            color: var(--green-accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #day-title {
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        #completion-marker label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background-color: #333;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        #completion-marker label:hover {
+            background-color: #444;
+        }
+
+        #completion-marker input {
+            margin-right: 0.5rem;
+        }
+
+        .content-section {
+            margin-bottom: 2rem;
+            background-color: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--yellow-accent);
+        }
+
+        .content-section h3 {
+            margin-top: 0;
+            color: var(--yellow-accent);
+        }
+        
+        .content-section.secret-sauce { border-left-color: var(--red-accent); }
+        .content-section.secret-sauce h3 { color: var(--red-accent); }
+        .content-section.revision-slot { border-left-color: var(--green-accent); }
+        .content-section.revision-slot h3 { color: var(--green-accent); }
+        .content-section.practice-protocol { border-left-color: var(--primary-color); }
+        .content-section.practice-protocol h3 { color: var(--primary-color); }
+
+        .revision-link {
+            text-decoration: underline;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        ul, ol { padding-left: 20px; }
+        a { color: var(--primary-color); }
+
+        .problem-list { list-style-type: none; padding: 0; }
+        .problem-item {
+            padding: 1rem;
+            border: 1px solid #333;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        .problem-header { display: flex; justify-content: space-between; align-items: center; }
+        .problem-header a { font-weight: bold; text-decoration: none; }
+        .problem-header a:hover { text-decoration: underline; }
+        .problem-focus {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .difficulty-tag { padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.8rem; color: white; }
+        .difficulty-easy { background-color: var(--green-accent); }
+        .difficulty-medium { background-color: var(--yellow-accent); color: #121212; }
+        .difficulty-hard { background-color: var(--red-accent); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; }
+            .sidebar { width: 100%; height: 300px; border-right: none; border-bottom: 1px solid #333; }
+            .main-content { padding: 1.5rem; }
+            header { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Google Prep: Zero Rejection System</h1>
+            <p>Your 8-Week Transformation Tracker</p>
+            <div id="progress-bar-container"><div id="progress-bar"></div></div>
+            <div id="progress-text">0/56 Days Complete</div>
+        </header>
+        <div class="main-wrapper">
+            <nav class="sidebar">
+                <h2>Schedule</h2>
+                <ul id="schedule-list"></ul>
+            </nav>
+            <main class="main-content">
+                <div class="day-header">
+                    <h2 id="day-title"></h2>
+                    <div id="completion-marker">
+                        <label><input type="checkbox" id="completion-checkbox"> Mark as Complete</label>
+                    </div>
+                </div>
+                <div id="day-content"></div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const PLAN = [
+            // Week 1: Bedrock Data Structures
+            {
+                week: 1, day: 1, topic: "Big O & Algorithmic Thinking",
+                why: "If you can't analyze your code's performance, you're an immediate 'no hire'. This is the language of engineering trade-offs.",
+                core_concepts: ["O(1), O(log n), O(n), O(n log n), O(n^2), O(2^n)", "Time vs. Space Complexity", "Identifying complexity from code", "Amortized Analysis"],
+                practice_problems: [
+                    { name: "Analyze Existing Code", link: "#", difficulty: "Easy", focus: "Go through 10 of your previously solved easy problems. Don't re-solve. For each, write down its Time and Space complexity and a one-sentence justification. This builds the analysis muscle." },
+                    { name: "Find the Celebrity", link: "https://leetcode.com/problems/find-the-celebrity/", difficulty: "Medium", focus: "A classic logic puzzle where a naive O(n^2) is obvious, but the goal is to find the clever O(n) solution. This is pure complexity thinking." },
+                    { name: "Frog Jump", link: "https://leetcode.com/problems/frog-jump/", difficulty: "Hard", focus: "This problem has multiple solutions (DFS, Memoization, DP). Analyze the complexity of each approach to understand trade-offs." }
+                ],
+                common_mistakes: "Confusing O(n log n) with O(n). Forgetting space complexity. Being hand-wavy ('it's kinda fast').",
+                my_input: "Always state your solution's complexity before coding. 'My brute-force is O(n^2), but we can optimize to O(n) using a hash map.' This shows high-level thinking from the start."
+            },
+            {
+                week: 1, day: 2, topic: "Arrays & Strings",
+                why: "The most fundamental building blocks. Google questions often start here and add layers of complexity.",
+                core_concepts: ["Dynamic arrays", "Two-pointer technique", "Sliding window", "Prefix sums", "String manipulation"],
+                practice_problems: [
+                    { name: "Two Sum", link: "https://leetcode.com/problems/two-sum/", difficulty: "Easy", focus: "The classic introduction to the 'complement' pattern using a hash map to reduce time complexity from O(n^2) to O(n)." },
+                    { name: "Container With Most Water", link: "https://leetcode.com/problems/container-with-most-water/", difficulty: "Medium", focus: "The quintessential two-pointer problem where pointers move towards each other. Understand *why* you can discard the shorter line." },
+                    { name: "3Sum", link: "https://leetcode.com/problems/3sum/", difficulty: "Medium", focus: "Builds on Two Sum. Sort the array first, then use the two-pointer approach. Handling duplicates is the key challenge." },
+                    { name: "Longest Substring Without Repeating Characters", link: "https://leetcode.com/problems/longest-substring-without-repeating-characters/", difficulty: "Medium", focus: "The canonical sliding window problem. Use a hash map or set to keep track of characters in the current window." },
+                    { name: "Product of Array Except Self", link: "https://leetcode.com/problems/product-of-array-except-self/", difficulty: "Medium", focus: "A masterclass in prefix/postfix calculations. Solve it without using the division operator. This requires two passes." },
+                    { name: "Trapping Rain Water", link: "https://leetcode.com/problems/trapping-rain-water/", difficulty: "Hard", focus: "A very common Google question. Can be solved with two pointers, DP, or a stack. Try to understand all three approaches to see the trade-offs." }
+                ],
+                common_mistakes: "Off-by-one errors. Incorrectly managing pointers in sliding window. Not handling string immutability correctly.",
+                my_input: "The Two-Pointer technique is a superpower. For any sorted array problem, your first thought should be: 'Can two pointers solve this?'"
+            },
+            {
+                week: 1, day: 3, topic: "Hash Maps & Hash Sets",
+                why: "Google's favorite data structure. The 'secret weapon' for optimizing brute-force O(n^2) solutions to O(n).",
+                core_concepts: ["How hashing works (buckets, collisions)", "Key-value pairs", "Use cases: caching, frequency counting, duplicates", "HashSet vs HashMap"],
+                practice_problems: [
+                    { name: "Group Anagrams", link: "https://leetcode.com/problems/group-anagrams/", difficulty: "Medium", focus: "The key is finding a way to create a canonical representation for each anagram group (e.g., sorted string) to use as a hash key." },
+                    { name: "Subarray Sum Equals K", link: "https://leetcode.com/problems/subarray-sum-equals-k/", difficulty: "Medium", focus: "Combines hash maps with the prefix sum pattern. A brilliant and common problem. You store prefix sums and their frequencies." },
+                    { name: "Insert Delete GetRandom O(1)", link: "https://leetcode.com/problems/insert-delete-getrandom-o1/", difficulty: "Medium", focus: "A great design problem. Requires combining a hash map (for O(1) lookups) with a dynamic array (for O(1) random access). The trick is in the deletion." },
+                    { name: "LRU Cache", link: "https://leetcode.com/problems/lru-cache/", difficulty: "Medium", focus: "The quintessential system design-esque coding problem. You must implement it using a hash map and a doubly linked list to achieve O(1) for both get and put." },
+                    { name: "First Missing Positive", link: "https://leetcode.com/problems/first-missing-positive/", difficulty: "Hard", focus: "A tricky problem that can be solved in O(n) time and O(1) space by using the array itself as a hash map. This is an advanced technique." }
+                ],
+                common_mistakes: "Using a hash map when a simple array would suffice (e.g., limited character set). Not understanding what makes a good hash function.",
+                my_input: "Frame your thinking. 'To speed this up, we need to check for a value in O(1) time. This immediately suggests using a hash map to store values we've seen.'"
+            },
+            {
+                week: 1, day: 4, topic: "Linked Lists",
+                why: "Tests your ability to handle pointers, edge cases (nulls, single-node lists), and meticulous bookkeeping.",
+                core_concepts: ["Singly vs. Doubly linked lists", "Fast & slow pointers", "Dummy head nodes", "Reversing a list"],
+                practice_problems: [
+                    { name: "Reverse Linked List", link: "https://leetcode.com/problems/reverse-linked-list/", difficulty: "Easy", focus: "The absolute foundation. You MUST be able to solve this both iteratively and recursively with 100% confidence." },
+                    { name: "Linked List Cycle", link: "https://leetcode.com/problems/linked-list-cycle/", difficulty: "Easy", focus: "Introduction to the fast & slow pointer (Floyd's Tortoise and Hare) algorithm." },
+                    { name: "Remove Nth Node From End of List", link: "https://leetcode.com/problems/remove-nth-node-from-end-of-list/", difficulty: "Medium", focus: "A classic two-pointer problem with a twist: one pointer is offset by 'n' steps. Perfect for practicing edge cases." },
+                    { name: "Reorder List", link: "https://leetcode.com/problems/reorder-list/", difficulty: "Medium", focus: "A multi-step problem that combines several techniques: find middle (slow/fast pointers), reverse second half, and merge the two lists." },
+                    { name: "Copy List with Random Pointer", link: "https://leetcode.com/problems/copy-list-with-random-pointer/", difficulty: "Medium", focus: "Tests your understanding of hash maps to associate old nodes with new nodes. The O(1) space solution is a beautiful, advanced trick." },
+                    { name: "Reverse Nodes in k-Group", link: "https://leetcode.com/problems/reverse-nodes-in-k-group/", difficulty: "Hard", focus: "The ultimate linked list problem. Requires perfect pointer manipulation and recursion. If you can solve this, you have mastered linked lists." }
+                ],
+                common_mistakes: "Losing the head of the list. Null pointer exceptions. Messing up `next` pointer re-assignments.",
+                my_input: "ALWAYS use a dummy head node for problems involving list modification. It simplifies code and eliminates a dozen edge cases around the real head."
+            },
+            {
+                week: 1, day: 5, topic: "Stacks & Queues",
+                why: "Fundamental for many algorithms (BFS, DFS) and system design concepts (message queues).",
+                core_concepts: ["LIFO vs. FIFO", "Stack for recursion/DFS", "Queue for BFS", "Monotonic Stack/Queue"],
+                practice_problems: [
+                    { name: "Valid Parentheses", link: "https://leetcode.com/problems/valid-parentheses/", difficulty: "Easy", focus: "The quintessential stack problem. Master this pattern." },
+                    { name: "Min Stack", link: "https://leetcode.com/problems/min-stack/", difficulty: "Medium", focus: "A design problem that forces you to think about how to maintain state (the minimum) efficiently alongside the stack operations." },
+                    { name: "Implement Queue using Stacks", link: "https://leetcode.com/problems/implement-queue-using-stacks/", difficulty: "Easy", focus: "Great for understanding amortized analysis and how two data structures can mimic another." },
+                    { name: "Daily Temperatures", link: "https://leetcode.com/problems/daily-temperatures/", difficulty: "Medium", focus: "Classic monotonic stack problem. The stack stores indices of days for which we haven't found a warmer day yet." },
+                    { name: "Sliding Window Maximum", link: "https://leetcode.com/problems/sliding-window-maximum/", difficulty: "Hard", focus: "The canonical monotonic queue (deque) problem. Essential for finding min/max in a sliding window in O(n) time." }
+                ],
+                common_mistakes: "Using a queue when a stack is needed. Not handling empty states. Overcomplicating monotonic stack problems.",
+                my_input: "Monotonic stacks/queues are a superpower. If a problem asks for the 'next greater element' or 'min/max in a sliding window', your brain should scream 'MONOTONIC STACK/QUEUE!'"
+            },
+            {
+                week: 1, day: 6, topic: "Trees - Traversal & Construction",
+                why: "Trees represent hierarchical data. Traversal is the absolute foundation for 90% of tree problems.",
+                core_concepts: ["Binary Tree vs. BST", "In-order, Pre-order, Post-order traversal (recursive & iterative)", "Level-order traversal (using a queue)"],
+                practice_problems: [
+                    { name: "Binary Tree Inorder Traversal", link: "https://leetcode.com/problems/binary-tree-inorder-traversal/", difficulty: "Easy", focus: "Master both the recursive and iterative (using a stack) solutions. This is non-negotiable." },
+                    { name: "Maximum Depth of Binary Tree", link: "https://leetcode.com/problems/maximum-depth-of-binary-tree/", difficulty: "Easy", focus: "A simple, clean recursive problem that solidifies the concept of a base case and recursive step." },
+                    { name: "Construct Binary Tree from Preorder and Inorder Traversal", link: "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/", difficulty: "Medium", focus: "The most famous tree construction problem. The key is understanding how preorder gives you the root and inorder splits the tree into left/right subtrees." },
+                    { name: "Binary Tree Level Order Traversal", link: "https://leetcode.com/problems/binary-tree-level-order-traversal/", difficulty: "Medium", focus: "Mastering the use of a queue for BFS on a tree. Know how to identify each level." },
+                    { name: "Binary Tree Right Side View", link: "https://leetcode.com/problems/binary-tree-right-side-view/", difficulty: "Medium", focus: "A clever application of level-order traversal where you only care about the last element at each level." }
+                ],
+                common_mistakes: "Mixing up traversal orders. Writing messy recursive code. Null pointer exceptions on leaf nodes.",
+                my_input: "Your recursive traversal code should be beautiful. A base case (`if not root: return`) and three lines: process node, recurse left, recurse right. The order is everything."
+            },
+            {
+                week: 1, day: 7, topic: "Heaps & Priority Queues",
+                why: "When an interviewer says 'find the largest/smallest K elements,' a flashing neon sign should say 'HEAP.'",
+                core_concepts: ["Min-heap vs. Max-heap", "heapify, insert, extract-min/max", "Priority Queue ADT"],
+                practice_problems: [
+                    { name: "Kth Largest Element in an Array", link: "https://leetcode.com/problems/kth-largest-element-in-an-array/", difficulty: "Medium", focus: "The absolute classic heap problem. Use a min-heap of size K to find the Kth largest element in O(N log K) time." },
+                    { name: "Top K Frequent Elements", link: "https://leetcode.com/problems/top-k-frequent-elements/", difficulty: "Medium", focus: "Combines a hash map (for frequencies) and a heap (to find the top K). A very common pattern." },
+                    { name: "Merge K Sorted Lists", link: "https://leetcode.com/problems/merge-k-sorted-lists/", difficulty: "Hard", focus: "A brilliant problem that shows the power of heaps. Add the head of each list to a min-heap and continuously extract the min." },
+                    { name: "Find Median from Data Stream", link: "https://leetcode.com/problems/find-median-from-data-stream/", difficulty: "Hard", focus: "The two-heap masterpiece. Use a max-heap for the lower half of numbers and a min-heap for the upper half to find the median in O(log N) time." }
+                ],
+                common_mistakes: "Using a min-heap when you need a max-heap. Sorting the whole collection (O(n log n)) when you only need top K (O(n log k)).",
+                my_input: "A heap is a 'tournament' data structure where the winner (min/max) is always at the top. The key is maintaining a heap of a specific size `k`."
+            },
+            // Week 2: Core Algorithms
+            {
+                week: 2, day: 8, topic: "Graphs - BFS & DFS",
+                why: "Models networks of all kinds. Foundational for pathfinding, connectivity, and many complex problems.",
+                core_concepts: ["Adjacency List vs. Matrix", "BFS for shortest path (unweighted)", "DFS for connectivity", "Tracking visited nodes"],
+                practice_problems: [
+                    { name: "Number of Islands", link: "https://leetcode.com/problems/number-of-islands/", difficulty: "Medium", focus: "The canonical graph-on-a-grid problem. Use DFS or BFS to explore and 'sink' an island once you find it. Master this." },
+                    { name: "Clone Graph", link: "https://leetcode.com/problems/clone-graph/", difficulty: "Medium", focus: "A great problem to test your understanding of graph traversal and using a hash map to map old nodes to new nodes to avoid cycles and redundant copies." },
+                    { name: "Rotting Oranges", link: "https://leetcode.com/problems/rotting-oranges/", difficulty: "Medium", focus: "Perfect for multi-source BFS. The 'levels' of the BFS correspond to minutes. A classic." },
+                    { name: "Pacific Atlantic Water Flow", link: "https://leetcode.com/problems/pacific-atlantic-water-flow/", difficulty: "Medium", focus: "A clever problem where you start a traversal from the 'outside' (the oceans) and work your way 'inland'. Requires two separate traversals." },
+                    { name: "Word Ladder", link: "https://leetcode.com/problems/word-ladder/", difficulty: "Hard", focus: "A problem that requires you to build the graph implicitly. It's a test of BFS for shortest path where nodes are words and edges connect words that are one letter apart." }
+                ],
+                common_mistakes: "Not tracking visited nodes, leading to infinite loops. Using DFS when BFS is required for shortest path. Messy state management.",
+                my_input: "BFS uses a Queue and explores level-by-level (think ripples in a pond). DFS uses a Stack (or recursion) and goes deep down one path before backtracking. Know which one to use and why."
+            },
+            {
+                week: 2, day: 9, topic: "Advanced Trees - BST",
+                why: "Binary Search Trees add a key property (ordering) that allows for O(log n) operations, a huge improvement over regular trees.",
+                core_concepts: ["BST properties", "Search, Insert, Delete", "In-order traversal yields a sorted list", "Validation"],
+                practice_problems: [
+                    { name: "Validate Binary Search Tree", link: "https://leetcode.com/problems/validate-binary-search-tree/", difficulty: "Medium", focus: "The key is to pass down min/max constraints during recursion, not just checking the immediate parent." },
+                    { name: "Kth Smallest Element in a BST", link: "https://leetcode.com/problems/kth-smallest-element-in-a-bst/", difficulty: "Medium", focus: "The in-order traversal of a BST is sorted. This problem is a direct application of that property. Can you optimize it if insertions/deletions are frequent?" },
+                    { name: "Lowest Common Ancestor of a BST", link: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/", difficulty: "Easy", focus: "Leverage the BST property to find the split point where one node is in the left subtree and the other is in the right. The iterative solution is beautiful." },
+                    { name: "Serialize and Deserialize BST", link: "https://leetcode.com/problems/serialize-and-deserialize-bst/", difficulty: "Hard", focus: "This is easier than for a regular binary tree. Think about how a preorder traversal is sufficient to reconstruct a BST." }
+                ],
+                common_mistakes: "Only checking node.left.val < node.val < node.right.val, which is incorrect for grandchildren nodes.",
+                my_input: "If the problem involves a sorted or ordered property in a tree, and asks for O(log n) operations, it's almost certainly a BST problem. The iterative solutions are often cleaner and avoid stack overflow."
+            },
+            {
+                week: 2, day: 10, topic: "Advanced Trees - Tries",
+                why: "The ultimate data structure for prefix-based searching, auto-complete, and dictionary problems.",
+                core_concepts: ["Node structure (children map, isEndOfWord flag)", "Insert, Search, startsWith operations"],
+                practice_problems: [
+                    { name: "Implement Trie (Prefix Tree)", link: "https://leetcode.com/problems/implement-trie-prefix-tree/", difficulty: "Medium", focus: "You must be able to implement this from scratch with a class-based structure. It's the foundation for all other trie problems." },
+                    { name: "Design Add and Search Words Data Structure", link: "https://leetcode.com/problems/design-add-and-search-words-data-structure/", difficulty: "Medium", focus: "Adds a wildcard '.' character, which requires a backtracking/DFS approach within the search function. A great follow-up." },
+                    { name: "Word Search II", link: "https://leetcode.com/problems/word-search-ii/", difficulty: "Hard", focus: "The definitive Trie + Backtracking problem. Build a Trie of all words, then DFS on the grid, pruning paths that don't exist in the Trie. This is a very common Google question." }
+                ],
+                common_mistakes: "Messy node implementation. Inefficient pruning in problems like Word Search II. Forgetting to handle the `isEndOfWord` flag correctly.",
+                my_input: "Anytime you see a list of strings and need to do prefix-based operations, a Trie will almost always be the optimal solution. It turns string comparisons into pointer traversals."
+            },
+            {
+                week: 2, day: 11, topic: "Sorting Theory & Applications",
+                why: "You won't implement quicksort, but you MUST know when to use which sort and understand the complexity trade-offs.",
+                core_concepts: ["Comparison vs. Non-comparison sorts", "Merge Sort (stable, O(n log n))", "Quick Sort (in-place, avg O(n log n))", "Bucket/Radix/Counting Sort (linear time for specific inputs)"],
+                practice_problems: [
+                    { name: "Sort Colors", link: "https://leetcode.com/problems/sort-colors/", difficulty: "Medium", focus: "A classic problem that can be solved in O(n) time and O(1) space using a three-pointer approach (Dutch National Flag problem), a form of counting sort." },
+                    { name: "Maximum Gap", link: "https://leetcode.com/problems/maximum-gap/", difficulty: "Hard", focus: "This problem forces you to think about linear time sorting. The solution involves bucket sort or radix sort. You can't use a comparison sort." },
+                    { name: "Top K Frequent Elements", link: "https://leetcode.com/problems/top-k-frequent-elements/", difficulty: "Medium", focus: "Revisit this from the heap day. Can you solve it with a variation of quicksort called Quickselect? Analyze the complexity difference. (O(n) average vs O(n log k))." }
+                ],
+                common_mistakes: "Defaulting to `Array.sort()` without understanding its time complexity or if a faster, non-comparison sort is possible.",
+                my_input: "The killer question is 'Can we do better than O(n log n)?' If the answer is yes, the interviewer is hinting at a non-comparison sort. Know the constraints for when Counting/Radix sort is applicable (e.g., bounded integer range)."
+            },
+            {
+                week: 2, day: 12, topic: "Backtracking - Core Patterns",
+                why: "A systematic way to explore all possible solutions to a problem by trying out choices and undoing them if they lead to a dead end. Essential for search problems.",
+                core_concepts: ["The choice-explore-unchoose pattern", "Recursion tree visualization", "Base cases and valid choice criteria"],
+                practice_problems: [
+                    { name: "Subsets", link: "https://leetcode.com/problems/subsets/", difficulty: "Medium", focus: "The absolute foundational backtracking problem. The choice for each element is to either include it in the current subset or not." },
+                    { name: "Combination Sum", link: "https://leetcode.com/problems/combination-sum/", difficulty: "Medium", focus: "Builds on subsets, but now you have a target sum. The key is how you structure the recursion to avoid using the same combination with different orders." },
+                    { name: "Permutations", link: "https://leetcode.com/problems/permutations/", difficulty: "Medium", focus: "Another core pattern. The key difference from subsets is that order matters, and you need to track which elements have been used in the current permutation." }
+                ],
+                common_mistakes: "Incorrectly passing data structures by reference, causing 'unchoose' steps to fail. Not having a solid base case to stop recursion. Inefficiently checking for used elements.",
+                my_input: "Draw the recursion tree on a whiteboard. For Subsets, it's a binary tree (include/exclude). For Permutations, the branching factor decreases at each level. This visualization is crucial to writing correct code."
+            },
+            {
+                week: 2, day: 13, topic: "Backtracking - Advanced",
+                why: "Adding constraints like duplicates or complex rules tests your mastery of the core backtracking template.",
+                core_concepts: ["Handling duplicates by sorting and skipping", "Pruning the search space", "Using helper data structures to track state"],
+                practice_problems: [
+                    { name: "Subsets II", link: "https://leetcode.com/problems/subsets-ii/", difficulty: "Medium", focus: "Adds the constraint of duplicate numbers. The standard trick is to sort the input and, in your loop, skip duplicates you've already processed at the current level." },
+                    { name: "Permutations II", link: "https://leetcode.com/problems/permutations-ii/", difficulty: "Medium", focus: "Same as Subsets II, but for permutations. Requires a combination of sorting to handle duplicates and a way to track used elements." },
+                    { name: "Palindrome Partitioning", link: "https://leetcode.com/problems/palindrome-partitioning/", difficulty: "Medium", focus: "Here, the 'choice' is where to make the next cut. You need a helper function to efficiently check if a substring is a palindrome." },
+                    { name: "N-Queens", link: "https://leetcode.com/problems/n-queens/", difficulty: "Hard", focus: "The classic complex backtracking problem. The key is how to efficiently check if placing a queen at `(row, col)` is valid. Use sets or arrays to track occupied columns and diagonals." }
+                ],
+                common_mistakes: "Incorrectly handling duplicates, leading to repeated solutions. Inefficient state checking (e.g., rescanning the whole board in N-Queens on every step).",
+                my_input: "The backtracking template is surprisingly consistent. It's `backtrack(path, choices)`. The genius is in how you define `choices` and how you prune them. Master the 'sort and skip duplicates' pattern; it comes up often."
+            },
+            { week: 2, day: 14, topic: "Week 1 & 2 Review", core_concepts: ["Spaced Repetition", "Identify Weakest Topic"], practice_problems: [{name: "Review your toughest problems from the last 13 days.", focus: "Can you solve them faster now? Can you explain the trade-offs of your solution clearly?"}] },
+
+            // Week 3: Dynamic Programming Gauntlet
+            { week: 3, day: 15, topic: "Intro to Dynamic Programming", why: "DP is a huge topic at Google. It's about breaking problems into subproblems and reusing solutions. We start simple.", core_concepts: ["Optimal Substructure", "Overlapping Subproblems", "Memoization (Top-Down) vs. Tabulation (Bottom-Up)"], practice_problems: [{ name: "Fibonacci Number", link: "https://leetcode.com/problems/fibonacci-number/", difficulty: "Easy", focus: "Solve it with plain recursion, then with memoization, then with tabulation, then with O(1) space. Understand the transition between all four." }, { name: "Climbing Stairs", link: "https://leetcode.com/problems/climbing-stairs/", difficulty: "Easy", focus: "This is Fibonacci in disguise. Recognize the recurrence relation: `ways(n) = ways(n-1) + ways(n-2)`." }, { name: "Min Cost Climbing Stairs", link: "https://leetcode.com/problems/min-cost-climbing-stairs/", difficulty: "Easy", focus: "A small twist on Climbing Stairs that makes the DP state and transition more explicit." }] },
+            { week: 3, day: 16, topic: "1D Dynamic Programming", why: "The most common DP pattern, where the state `dp[i]` depends only on previous states in a single array.", core_concepts: ["Defining the state `dp[i]`", "Finding the recurrence relation", "Identifying base cases"], practice_problems: [{ name: "House Robber", link: "https://leetcode.com/problems/house-robber/", difficulty: "Medium", focus: "Classic 1D DP. The choice is to rob or not to rob. `dp[i] = max(dp[i-1], dp[i-2] + nums[i])`. Master this." }, { name: "House Robber II", link: "https://leetcode.com/problems/house-robber-ii/", difficulty: "Medium", focus: "A clever twist. The problem reduces to two separate House Robber I problems: one on `nums[0...n-2]` and one on `nums[1...n-1]`." }, { name: "Coin Change", link: "https://leetcode.com/problems/coin-change/", difficulty: "Medium", focus: "A foundational DP problem. `dp[amount]` is the min coins. The inner loop iterates through coins. `dp[i] = min(dp[i], dp[i - coin] + 1)`." }, { name: "Longest Increasing Subsequence", link: "https://leetcode.com/problems/longest-increasing-subsequence/", difficulty: "Medium", focus: "A common O(n^2) DP solution where `dp[i]` is the length of the LIS ending at index `i`. There's a beautiful O(n log n) solution too – try to understand it." }] },
+            { week: 3, day: 17, topic: "2D Dynamic Programming", why: "For problems involving grids, matrices, or two input strings, the state often needs two dimensions.", core_concepts: ["`dp[i][j]` state definition", "State transitions from neighbours", "Handling matrix boundaries"], practice_problems: [{ name: "Unique Paths", link: "https://leetcode.com/problems/unique-paths/", difficulty: "Medium", focus: "The 'Hello, World!' of 2D DP. `dp[i][j] = dp[i-1][j] + dp[i][j-1]`." }, { name: "Minimum Path Sum", link: "https://leetcode.com/problems/minimum-path-sum/", difficulty: "Medium", focus: "A small variation on Unique Paths, now with costs. `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])`." }, { name: "Maximal Square", link: "https://leetcode.com/problems/maximal-square/", difficulty: "Medium", focus: "A trickier state transition. `dp[i][j]` is the side length of the max square ending at `(i,j)`. `dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])`." }] },
+            { week: 3, day: 18, topic: "DP on Strings (LCS Pattern)", why: "A very common sub-category of 2D DP for problems like 'find the longest common ...' or 'minimum edits to transform...'", core_concepts: ["`dp[i][j]` as a solution for `s1[0...i]` and `s2[0...j]`", "Match vs. Mismatch state transitions"], practice_problems: [{ name: "Longest Common Subsequence", link: "https://leetcode.com/problems/longest-common-subsequence/", difficulty: "Medium", focus: "The absolute foundation. If `s1[i] == s2[j]`, `dp[i][j] = 1 + dp[i-1][j-1]`. Else, `dp[i][j] = max(dp[i-1][j], dp[i][j-1])`." }, { name: "Edit Distance", link: "https://leetcode.com/problems/edit-distance/", difficulty: "Hard", focus: "The classic follow-up to LCS. Adds the 'replace' operation. The state transition is very similar but with three choices: insert, delete, or replace." }] },
+            { week: 3, day: 19, topic: "DP - Knapsack Patterns", why: "Problems about choosing a subset of items to maximize value/meet a target, given constraints.", core_concepts: ["0/1 Knapsack (item can be taken once)", "Unbounded Knapsack (item can be taken multiple times)"], practice_problems: [{ name: "Partition Equal Subset Sum", link: "https://leetcode.com/problems/partition-equal-subset-sum/", difficulty: "Medium", focus: "This is a 0/1 Knapsack problem in disguise. The 'capacity' is `sum(nums)/2`, and the 'items' are the numbers themselves. The question is 'can we make the sum?'" }, { name: "Coin Change 2", link: "https://leetcode.com/problems/coin-change-2/", difficulty: "Medium", focus: "Unbounded Knapsack. Find the number of combinations. Be careful with the loop order to count combinations, not permutations." }] },
+            { week: 3, day: 20, topic: "DP - Advanced Patterns", why: "Some DP problems don't fit neat categories and test your ability to define state and transitions from scratch.", core_concepts: ["State machine DP", "DP with intervals"], practice_problems: [{ name: "Word Break", link: "https://leetcode.com/problems/word-break/", difficulty: "Medium", focus: "`dp[i]` is whether `s[0...i]` can be segmented. To compute `dp[i]`, you check if `dp[j]` is true and `s[j+1...i]` is a word for all `j < i`." }, { name: "Best Time to Buy and Sell Stock with Cooldown", link: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/", difficulty: "Medium", focus: "A classic state machine DP problem. You need to track three states at each day: `held`, `sold`, and `cool-down`." }, { name: "Burst Balloons", link: "https://leetcode.com/problems/burst-balloons/", difficulty: "Hard", focus: "A very difficult interval DP problem. The key is to think about the *last* balloon to be burst in an interval, not the first." }] },
+            { week: 3, day: 21, topic: "Week 3 Review", core_concepts: ["Memoization vs Tabulation", "Identifying DP Patterns"], practice_problems: [{ name: "Review the 5 DP patterns from this week.", focus: "For each pattern, explain the state definition and transition out loud." }] },
+
+            // ... And so on for all 56 days ...
+             { week: 4, day: 22, topic: "Advanced Graphs - Union-Find", why: "For problems involving dynamic connectivity or partitioning sets, Union-Find is far more efficient than standard graph traversal.", core_concepts: ["`find` and `union` operations", "Path Compression", "Union by Rank/Size"], practice_problems: [{ name: "Number of Connected Components", link: "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/", difficulty: "Medium", focus: "The 'Hello, World!' of Union-Find. The number of components is the number of sets at the end." }, { name: "Graph Valid Tree", link: "https://leetcode.com/problems/graph-valid-tree/", difficulty: "Medium", focus: "A graph is a tree if it has N-1 edges and is fully connected. Union-Find can check both conditions efficiently." }, { name: "Accounts Merge", link: "https://leetcode.com/problems/accounts-merge/", difficulty: "Medium", focus: "A great problem where you union accounts that share an email. Requires mapping emails to indices." }] },
+            { week: 4, day: 23, topic: "Advanced Graphs - Dijkstra's", why: "The go-to algorithm for finding the shortest path in a WEIGHTED graph where edge weights are non-negative.", core_concepts: ["Priority Queue (Min-Heap) for efficiency", "Tracking distances", "Relaxation step"], practice_problems: [{ name: "Network Delay Time", link: "https://leetcode.com/problems/network-delay-time/", difficulty: "Medium", focus: "A perfect, straightforward application of Dijkstra's. The answer is the max distance from the source to any node." }, { name: "Path with Maximum Probability", link: "https://leetcode.com/problems/path-with-maximum-probability/", difficulty: "Medium", focus: "A variation where you want to maximize a product of probabilities. You can convert this to a shortest path problem by using negative logarithms, or by just using a max-heap instead of a min-heap." }] },
+            { week: 4, day: 24, topic: "Interval Problems", why: "A very common problem category at Google. Usually involves sorting and then a single pass.", core_concepts: ["Sorting by start or end time", "Merging overlapping intervals", "Using a min-heap for scheduling"], practice_problems: [{ name: "Merge Intervals", link: "https://leetcode.com/problems/merge-intervals/", difficulty: "Medium", focus: "The canonical interval problem. Sort by start time, then iterate and merge with the last interval in your result." }, { name: "Non-overlapping Intervals", link: "https://leetcode.com/problems/non-overlapping-intervals/", difficulty: "Medium", focus: "A greedy approach. Sort by end time, and keep the interval that finishes earliest." }, { name: "Meeting Rooms II", link: "https://leetcode.com/problems/meeting-rooms-ii/", difficulty: "Medium", focus: "Classic application of a min-heap. Sort by start time. The heap stores the end times of meetings currently in progress. The heap size is the number of rooms." }] },
+            { week: 4, day: 25, topic: "Bit Manipulation", why: "Shows deep computer science knowledge. Can lead to extremely fast and memory-efficient solutions.", core_concepts: ["AND, OR, XOR, NOT, Left/Right Shift", "Get/Set/Clear a bit", "Two's complement"], practice_problems: [{ name: "Sum of Two Integers", link: "https://leetcode.com/problems/sum-of-two-integers/", difficulty: "Medium", focus: "A classic. Use XOR for the sum and AND + left shift for the carry. Repeat until carry is 0." }, { name: "Counting Bits", link: "https://leetcode.com/problems/counting-bits/", difficulty: "Easy", focus: "Can be solved with DP. `dp[i] = dp[i & (i-1)] + 1`. This trick `i & (i-1)` turns off the rightmost set bit." }, { name: "Single Number", link: "https://leetcode.com/problems/single-number/", difficulty: "Easy", focus: "A beautiful property of XOR: `x ^ x = 0` and `x ^ 0 = x`. XORing all numbers together will cancel out the pairs, leaving the single one." }] },
+            { week: 4, day: 26, topic: "Advanced String Algorithms", why: "Beyond simple manipulation, these problems require specialized algorithms for pattern matching and palindromes.", core_concepts: ["Longest Palindromic Substring patterns", "KMP for pattern matching (conceptual)"], practice_problems: [{ name: "Longest Palindromic Substring", link: "https://leetcode.com/problems/longest-palindromic-substring/", difficulty: "Medium", focus: "The 'expand from center' approach is the most intuitive and efficient O(n^2) solution. You must know it." }, { name: "Valid Palindrome", link: "https://leetcode.com/problems/valid-palindrome/", difficulty: "Easy", focus: "A good warm-up using the two-pointer technique." }, { name: "Encode and Decode Strings", link: "https://leetcode.com/problems/encode-and-decode-strings/", difficulty: "Medium", focus: "A great design question. How do you handle special characters? The common solution is `length#string` encoding." }] },
+            { week: 4, day: 27, topic: "Math & Geometry", why: "Less common, but can appear. Usually involves matrix manipulation or number theory.", core_concepts: ["Matrix rotation/transposition", "Spiral traversal", "Reservoir Sampling"], practice_problems: [{ name: "Rotate Image", link: "https://leetcode.com/problems/rotate-image/", difficulty: "Medium", focus: "The trick is to first transpose the matrix, then reverse each row. This is an in-place O(1) space solution." }, { name: "Spiral Matrix", link: "https://leetcode.com/problems/spiral-matrix/", difficulty: "Medium", focus: "A simulation problem. Keep track of boundaries (top, bottom, left, right) and shrink them as you traverse." }, { name: "Pow(x, n)", link: "https://leetcode.com/problems/powx-n/", difficulty: "Medium", focus: "The optimal solution is O(log n) using recursion (exponentiation by squaring)." }] },
+            { week: 4, day: 28, topic: "Weeks 1-4 Mega Review", core_concepts: ["Identify your 3 weakest areas from the past month."], practice_problems: [{ name: "Do 3 hard problems from your weakest areas.", focus: "This is a stress test. If you get stuck, review that day's material again." }] },
+            
+            // Weeks 5 & 6: System Design
+            { week: 5, day: 29, topic: "System Design: Fundamentals", why: "Coding gets you the interview. System design gets you the job (for L4+). Today is about the vocabulary and framework.", core_concepts: ["The 4-Step Framework: Clarify, Design High-Level, Deep Dive, Wrap Up", "Latency vs Throughput", "Availability vs Consistency", "CAP Theorem"], practice_problems: [{ name: "Read 'System Design Primer' on GitHub", link: "https://github.com/donnemartin/system-design-primer", focus: "Read the 'System Design Topics' section. This is your bible." }] },
+            { week: 5, day: 30, topic: "System Design: Scaling & Load Balancing", why: "You can't just have one server. This is how you handle millions of users.", core_concepts: ["Vertical vs. Horizontal Scaling", "Load Balancers (Round Robin, Least Connections, IP Hash)", "Stateless vs. Stateful services"], practice_problems: [{ name: "Watch a video on Load Balancers", focus: "Understand the different strategies and when you'd use each." }] },
+            { week: 5, day: 31, topic: "System Design: Databases", why: "The heart of most systems. Knowing the trade-offs is non-negotiable.", core_concepts: ["SQL vs. NoSQL", "Sharding (partitioning)", "Replication (master-slave, master-master)", "Indexing"], practice_problems: [{ name: "Compare Cassandra vs. MySQL", focus: "When would you choose a NoSQL wide-column store over a relational database? What are the trade-offs?" }] },
+            { week: 5, day: 32, topic: "System Design: Caching", why: "The fastest way to improve performance is to not do the work. That's caching.", core_concepts: ["Client-side, Server-side, CDN", "Cache-aside, Read-through, Write-through patterns", "Cache eviction policies (LRU, LFU, FIFO)"], practice_problems: [{ name: "Explain how to implement an LRU cache.", focus: "Revisit Day 3. The combination of a hash map and a doubly-linked list is the key." }] },
+            { week: 5, day: 33, topic: "System Design: APIs & Protocols", why: "How services talk to each other. Shows you think about the whole ecosystem.", core_concepts: ["REST vs. RPC (gRPC)", "Synchronous vs. Asynchronous communication", "Message Queues (e.g., Kafka, RabbitMQ)", "Pub/Sub pattern"], practice_problems: [{ name: "When to use a message queue?", focus: "Decoupling services, handling spikes in traffic, asynchronous processing." }] },
+            { week: 5, day: 34, topic: "Design a URL Shortener", why: "The 'Hello, World!' of system design. It touches on all core components in a simple way.", core_concepts: ["Hashing vs. Base-62 conversion", "API Design (POST /shorten, GET /{hash})", "Database schema", "Handling collisions"], practice_problems: [{ name: "Whiteboard the full design.", focus: "Start with requirements, draw the boxes and arrows for the high-level design, then deep-dive into the hash generation." }] },
+            { week: 5, day: 35, topic: "Design a Social Media Feed", why: "A classic read-heavy system. The key is how to generate the feed efficiently.", core_concepts: ["Fan-out on write vs. Fan-out on read", "The 'Celebrity' problem", "Using a cache (e.g., Redis) to store pre-generated feeds"], practice_problems: [{ name: "Compare the two fan-out approaches.", focus: "For most users, fan-out on write is better. For celebrities, you do fan-out on read to avoid a massive write storm." }] },
+            { week: 6, day: 36, topic: "Design a Search Autocomplete", why: "A great problem that combines data structures (Trie) with system design.", core_concepts: ["Using a Trie to store suggestions", "How to rank suggestions (e.g., by frequency)", "Updating the Trie", "Scaling the Trie (sharding)"], practice_problems: [{ name: "Whiteboard the data flow.", focus: "From the user typing a character to the API returning a list of ranked suggestions. Where does the Trie live? How is it kept fast?" }] },
+            { week: 6, day: 37, topic: "Design a Ride-Sharing App", why: "A location-based, real-time system with complex state management.", core_concepts: ["Updating driver locations (push vs. pull)", "Matching riders and drivers (quadtrees, geohashing)", "Handling state transitions (requested, matched, in-progress, completed)"], practice_problems: [{ name: "Focus on the driver-matching component.", focus: "How do you find the N closest drivers efficiently from a pool of millions?" }] },
+            { week: 6, day: 38, topic: "Design a Distributed Message Queue", why: "Like Kafka. Shows you understand distributed systems, fault tolerance, and high throughput.", core_concepts: ["Producers, Consumers, Brokers", "Topics and Partitions", "Replication for fault tolerance", "Commit logs"], practice_problems: [{ name: "How do you ensure 'at-least-once' delivery?", focus: "The consumer must acknowledge the message *after* processing it." }] },
+            { week: 6, day: 39, topic: "Design Google Docs", why: "Tests your understanding of concurrency, real-time collaboration, and conflict resolution.", core_concepts: ["Operational Transformation (OT) vs. CRDTs", "WebSockets for real-time communication", "Heartbeat checks", "Storing document history"], practice_problems: [{ name: "Explain the high-level idea of OT.", focus: "How do you handle two users typing at the same time without corrupting the document?" }] },
+            { week: 6, day: 40, topic: "Coding & System Design Review", core_concepts: ["Revisit your weakest areas."], practice_problems: [{ name: "Do 2 hard coding problems.", focus: "Keep the coding muscles warm." }, { name: "Redo one system design problem from this week without looking at your notes.", focus: "Can you recall the key trade-offs?" }] },
+            { week: 6, day: 41, topic: "Object-Oriented Design Practice", why: "Sometimes asked for specific roles. Shows you can structure code cleanly.", core_concepts: ["SOLID principles", "Design Patterns (Strategy, Singleton, Factory, Observer)"], practice_problems: [{ name: "Design a Parking Lot.", focus: "Define the classes (Vehicle, Spot, Level, ParkingLot). What are the key methods?" }, { name: "Design a Vending Machine.", focus: "Think about states (NoCoin, HasCoin, SoldOut) and transitions." }] },
+            { week: 6, day: 42, topic: "Week 5 & 6 Review", core_concepts: ["System Design Framework", "Key Trade-offs"], practice_problems: [{ name: "Explain the architecture of a URL shortener to a rubber duck.", focus: "If you can't explain it simply, you don't understand it well enough." }] },
+
+            // Weeks 7 & 8: Polish & Performance
+            { week: 7, day: 43, topic: "Behavioral: STAR Method & Project Deep Dive", why: "This is 50% of the interview. A great technical performance can be ruined by a poor behavioral one.", core_concepts: ["Situation, Task, Action, Result", "Quantify your impact", "Focus on 'I', not 'we'"], practice_problems: [{ name: "Write out 3 detailed STAR stories from your resume.", focus: "For each, what was the technical challenge? What was the outcome in numbers?" }] },
+            { week: 7, day: 44, topic: "Behavioral: Googliness & Leadership", why: "They want to know if you're a good person to work with. Are you collaborative, proactive, and ethical?", core_concepts: ["Bias for action", "Handling ambiguity", "User focus", "Teamwork"], practice_problems: [{ name: "Prepare a story about a time you had a conflict with a teammate.", focus: "How did you resolve it professionally? What was the outcome?" }] },
+            { week: 7, day: 45, topic: "Behavioral: Handling Failure & Weakness", why: "They want to see self-awareness and a growth mindset. Perfection is a red flag.", core_concepts: ["Admitting mistakes", "What you learned", "How you corrected it", "What's a real weakness you're working on?"], practice_problems: [{ name: "Prepare a story about a time a project failed or you made a major technical error.", focus: "Be honest. The key is what you learned from it." }] },
+            { week: 7, day: 46, topic: "Full Mock Interview #1 (Partnered)", why: "Time to simulate the real thing. Use a platform like Pramp or interview a friend.", core_concepts: ["45 minutes on the clock", "Coding problem + Behavioral questions"], practice_problems: [{ name: "Get feedback on your communication.", focus: "Were you clear? Did you explain your thoughts before coding?" }] },
+            { week: 7, day: 47, topic: "Mock Interview #1 Review & Weakness Drilling", why: "The feedback is more important than the interview itself.", core_concepts: ["Identify the #1 weakness from yesterday.", "Drill that specific area."], practice_problems: [{ name: "If you were slow on a DP problem, do 3 more DP problems.", focus: "Turn your weakness into a strength." }] },
+            { week: 7, day: 48, topic: "Full Mock Interview #2 (System Design)", why: "Practice the system design conversation flow.", core_concepts: ["45 minutes on the clock", "System Design prompt + follow-up questions"], practice_problems: [{ name: "Get feedback on your framework.", focus: "Did you clarify requirements? Did you drive the conversation?" }] },
+            { week: 7, day: 49, topic: "Week 7 Review", core_concepts: ["Review all behavioral stories", "Review mock interview feedback"], practice_problems: [{ name: "Practice telling your top 3 STAR stories out loud to the mirror.", focus: "Make them sound natural, not rehearsed." }] },
+
+            { week: 8, day: 50, topic: "Full Mock Interview #3 (Coding)", why: "Another rep to build confidence.", core_concepts: ["Focus on speed and clarity."], practice_problems: [{ name: "Do a timed 45-minute mock with a hard LeetCode problem." }] },
+            { week: 8, day: 51, topic: "Full Mock Interview #4 (System Design)", why: "One last system design rep.", core_concepts: ["Focus on justifying your trade-offs."], practice_problems: [{ name: "Do a timed 45-minute mock with an unfamiliar design prompt." }] },
+            { week: 8, day: 52, topic: "Final Weakness Drilling", why: "Last chance to patch any holes.", core_concepts: ["Be honest with yourself. What topic still scares you?"], practice_problems: [{ name: "Do 3 medium problems on your single weakest topic." }] },
+            { week: 8, day: 53, topic: "Review Top Google Questions", why: "Familiarize yourself with common patterns asked at Google.", core_concepts: ["Review LeetCode's Google-tagged question list."], practice_problems: [{ name: "Don't solve them from scratch. Read the problem and the top-voted solution.", focus: "The goal is pattern recognition, not grinding." }] },
+            { week: 8, day: 54, topic: "Final Review & Mental Prep", why: "Consolidate knowledge and build confidence.", core_concepts: ["Review your notes.", "Read through your STAR stories."], practice_problems: [{ name: "Do one easy problem to end on a win.", focus: "Feel confident." }] },
+            { week: 8, day: 55, topic: "Prepare Your Questions for the Interviewer", why: "Shows you are engaged and curious. A strong ending.", core_concepts: ["Ask about team culture, technical challenges, project impact."], practice_problems: [{ name: "Write down 3-5 thoughtful questions.", focus: "Do not ask about salary or perks." }] },
+            { week: 8, day: 56, topic: "REST", why: "Your brain is a muscle. It needs to recover before a marathon. Do not study today.", core_concepts: ["Relax", "Sleep", "Eat well"], practice_problems: [{ name: "Go for a walk. Watch a movie. Do not touch a line of code.", focus: "Trust the process. You are ready." }] }
+        ];
+
+        let completedDays = new Set();
+        let currentDayIndex = 0;
+
+        const scheduleList = document.getElementById('schedule-list');
+        const dayTitle = document.getElementById('day-title');
+        const dayContent = document.getElementById('day-content');
+        const completionCheckbox = document.getElementById('completion-checkbox');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        function loadProgress() {
+            const saved = localStorage.getItem('googlePrepCompletedDays');
+            if (saved) {
+                completedDays = new Set(JSON.parse(saved));
+            }
+            const savedIndex = localStorage.getItem('googlePrepCurrentDayIndex');
+            currentDayIndex = savedIndex ? parseInt(savedIndex, 10) : 0;
+            if (currentDayIndex >= PLAN.length) currentDayIndex = 0;
+        }
+
+        function saveProgress() {
+            localStorage.setItem('googlePrepCompletedDays', JSON.stringify(Array.from(completedDays)));
+            localStorage.setItem('googlePrepCurrentDayIndex', currentDayIndex.toString());
+        }
+
+        function renderSidebar() {
+            scheduleList.innerHTML = '';
+            let currentWeek = 0;
+            PLAN.forEach((day, index) => {
+                if (day.week > currentWeek) {
+                    currentWeek = day.week;
+                    const weekHeader = document.createElement('li');
+                    weekHeader.innerHTML = `<strong>Week ${currentWeek}</strong>`;
+                    weekHeader.style.pointerEvents = 'none';
+                    weekHeader.style.marginTop = '10px';
+                    scheduleList.appendChild(weekHeader);
+                }
+
+                const li = document.createElement('li');
+                li.dataset.index = index;
+                li.innerHTML = `<span class="day-title">Day ${day.day}: ${day.topic}</span>`;
+                if (completedDays.has(day.day)) li.classList.add('completed');
+                if (index === currentDayIndex) li.classList.add('active');
+                li.addEventListener('click', () => { displayDay(index); });
+                scheduleList.appendChild(li);
+            });
+        }
+        
+        function getRevisionContent(dayIndex) {
+            let revisionText = "";
+            const revisionSlots = [];
+            
+            if (dayIndex + 1 <= 28) { // Weeks 1-4
+                if (dayIndex - 1 >= 0) revisionSlots.push({label: "1 Day Ago", index: dayIndex - 1});
+                if (dayIndex - 6 >= 0) revisionSlots.push({label: "1 Week Ago", index: dayIndex - 6});
+            } else { // Weeks 5-8
+                if (dayIndex - 6 >= 0) revisionSlots.push({label: "1 Week Ago", index: dayIndex - 6});
+                if (dayIndex - 20 >= 0) revisionSlots.push({label: "3 Weeks Ago", index: dayIndex - 20});
+            }
+
+            if (revisionSlots.length > 0) {
+                revisionText = "Revisit these topics. Explain the core concepts out loud and re-do one medium problem from that day.<ul>";
+                revisionSlots.forEach(slot => {
+                    const dayToRevise = PLAN[slot.index];
+                    revisionText += `<li>${slot.label}: <span class="revision-link" data-index="${slot.index}">Day ${dayToRevise.day} - ${dayToRevise.topic}</span></li>`;
+                });
+                revisionText += "</ul>";
+            } else {
+                revisionText = "It's your first few days. Focus on today's mission!"
+            }
+            return revisionText;
+        }
+        
+        function generatePracticeProblemsHTML(problems) {
+            if (!problems || problems.length === 0) return '<p>Focus on conceptual understanding, or complete the weekly review.</p>';
+            
+            const problemItems = problems.map(p => `
+                <li class="problem-item">
+                    <div class="problem-header">
+                        <a href="${p.link || '#'}" target="_blank" rel="noopener noreferrer">${p.name}</a>
+                        <span class="difficulty-tag difficulty-${(p.difficulty || 'medium').toLowerCase()}">${p.difficulty || 'Medium'}</span>
+                    </div>
+                    <div class="problem-focus"><strong>Focus:</strong> ${p.focus || 'Solve this problem efficiently.'}</div>
+                </li>
+            `).join('');
+            
+            return `<ul class="problem-list">${problemItems}</ul>`;
+        }
+
+        function displayDay(index) {
+            currentDayIndex = index;
+            const day = PLAN[index];
+            if (!day) return;
+
+            dayTitle.textContent = `Day ${day.day}: ${day.topic}`;
+
+            dayContent.innerHTML = `
+                <div class="content-section"><h3>The "Why"</h3><p>${day.why}</p></div>
+                <div class="content-section"><h3>Core Concepts</h3><ul>${day.core_concepts.map(c => `<li>${c}</li>`).join('')}</ul></div>
+                <div class="content-section practice-protocol"><h3>Practice Protocol</h3>${generatePracticeProblemsHTML(day.practice_problems)}</div>
+                <div class="content-section"><h3>Common Mistakes to Avoid</h3><p>${day.common_mistakes}</p></div>
+                <div class="content-section secret-sauce"><h3>My Input (The Secret Sauce)</h3><p>${day.my_input}</p></div>
+                <div class="content-section revision-slot"><h3>Revision Slot</h3><p>${getRevisionContent(index)}</p></div>
+            `;
+            
+            document.querySelectorAll('.revision-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const newIndex = parseInt(e.target.dataset.index, 10);
+                    displayDay(newIndex);
+                    document.querySelector('.main-content').scrollTop = 0;
+                });
+            });
+
+            completionCheckbox.checked = completedDays.has(day.day);
+            
+            document.querySelectorAll('#schedule-list li').forEach(li => {
+                li.classList.remove('active');
+                if (parseInt(li.dataset.index, 10) === index) {
+                    li.classList.add('active');
+                    if (!li.matches(':hover')) {
+                        li.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                    }
+                }
+            });
+            
+            saveProgress();
+        }
+        
+        function updateProgressBar() {
+            const completedCount = completedDays.size;
+            const totalDays = PLAN.length;
+            const percentage = totalDays > 0 ? (completedCount / totalDays) * 100 : 0;
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${completedCount}/${totalDays} Days Complete`;
+        }
+
+        completionCheckbox.addEventListener('change', () => {
+            const day = PLAN[currentDayIndex];
+            if (completionCheckbox.checked) completedDays.add(day.day);
+            else completedDays.delete(day.day);
+            renderSidebar();
+            updateProgressBar();
+            saveProgress();
+        });
+
+        // Initial Load
+        loadProgress();
+        renderSidebar();
+        displayDay(currentDayIndex);
+        updateProgressBar();
+    </script>
+</body>
+</html>
