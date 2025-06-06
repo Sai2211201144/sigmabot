@@ -199,45 +199,60 @@ async function postCarouselToInstagram({ carouselBuffers, caption }) {
 // ===================================================================
 // MAIN ORCHESTRATOR (updated for carousel support)
 // ===================================================================
+// ===================================================================
+//                  MAIN EXECUTION BLOCK (v2.0)
+// ===================================================================
 (async () => {
   try {
     // 1. CHOOSE A NICHE FOR THE DAY
-    const niches = ['quotes', 'health_tips', 'ai_tools', 'common_problems'];
-    const dayOfWeek = new Date().getDay(); // Sunday=0, Monday=1, ...
+    const niches = ['quotes', 'health_tips', 'ai_tools', 'common_problems']; // Add your new niches here
+    const dayOfWeek = new Date().getDay();
     const selectedNiche = niches[dayOfWeek % niches.length];
     console.log(`Day ${dayOfWeek}: Running the '${selectedNiche}' module.`);
 
-    const configPath = path.join(__dirname, 'content', selectedNiche, 'config.json');
-    const nicheConfig = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+    const nichePath = path.join(__dirname, 'content', selectedNiche);
+    
+    // 2. FETCH CONTENT
+    const staticContent = await fetchStaticContent(selectedNiche); // fetchStaticContent should return the whole post object from data.json
+    
+    // 3. DECIDE POST TYPE (SINGLE IMAGE OR CAROUSEL)
+    // Check if the content has a 'slides' property.
+    if (staticContent.item.slides && Array.isArray(staticContent.item.slides)) {
+        // --- THIS IS A CAROUSEL POST ---
+        console.log('Carousel content detected. Generating slides...');
+        
+        // Generate all the slide images
+        const carouselBuffers = await generateCarouselImages(staticContent.item.slides, nichePath);
+        
+        // Generate the caption (you can make this smarter later)
+        const caption = `${staticContent.item.slides[0].text}\n.\n.\n.\nFollow @${YOUR_HANDLE} for more tips!\n.\n#${selectedNiche} #health #wellness #infographic`;
+        
+        // Post the carousel
+        await postToInstagram({ carouselBuffers, caption });
 
-    let caption;
-
-    if (selectedNiche === 'common_problems') {
-      // Carousel logic
-      const nichePath = path.join(__dirname, 'content', selectedNiche);
-      const staticContent = await getStaticContent(selectedNiche);
-      const slides = staticContent.slides;
-      caption = slides[0].text + `\n.\n.\nFollow ${YOUR_HANDLE} for more solutions!`;
-      const carouselBuffers = await generateCarouselImages(slides, nichePath);
-      await postCarouselToInstagram({ carouselBuffers, caption });
-    } else if (selectedNiche === 'ai_tools') {
-      // Existing logic for ai_tools
-      const dynamicContent = await getDynamicAiContent(nicheConfig);
-      const content = { title: dynamicContent.title, subtitle: `Source: ${dynamicContent.source}` };
-      caption = `${dynamicContent.title}\n.\n.\n.\nStay ahead of the curve with daily AI news. Follow ${YOUR_HANDLE} for more!\n.\n.\n.\n#ai #artificialintelligence #ainews #tech #machinelearning #futuretech`;
-      const templatePath = path.join(__dirname, 'content', selectedNiche, 'template.html');
-      const imageBuffer = await generateImage(templatePath, nicheConfig.pexels_keywords, content);
-      await postToInstagram({ imageBuffer, caption });
     } else {
-      // Existing logic for quotes, health_tips, etc.
-      const staticContent = await getStaticContent(selectedNiche);
-      const content = { title: staticContent.quote || staticContent.tip, subtitle: staticContent.author || '' };
-      const templatePath = path.join(__dirname, 'content', selectedNiche, 'template.html');
-      const hashtags = nicheConfig.hashtags || '#motivation #inspiration';
-      caption = `${content.title}\n.\n.\n.\nFollow ${YOUR_HANDLE} for your daily dose of wisdom.\n.\n.\n${hashtags}`;
-      const imageBuffer = await generateImage(templatePath, nicheConfig.pexels_keywords, content);
-      await postToInstagram({ imageBuffer, caption });
+        // --- THIS IS A SINGLE IMAGE POST ---
+        console.log('Single image content detected. Generating image...');
+        
+        // Use the OLD generateImage logic for backward compatibility
+        const configPath = path.join(nichePath, 'config.json');
+        const nicheConfig = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+        const templatePath = path.join(nichePath, 'template.html');
+
+        const imageContent = {
+            quote: staticContent.item.quote || staticContent.item.tip || staticContent.item.text,
+            author: staticContent.item.author || 'Daily Update'
+        };
+
+        const imageBuffer = await generateImage(templatePath, nicheConfig.pexels_keywords, imageContent);
+        
+        // To post a single image, we still use the carousel function, but with only one item.
+        const carouselBuffers = [{ file: imageBuffer }];
+        const caption = generateCaption(staticContent.item, YOUR_HANDLE, selectedNiche);
+        
+        await postToInstagram({ carouselBuffers, caption });
     }
+
   } catch (error) {
     console.error('An error occurred in the main execution:', error);
     process.exit(1);
