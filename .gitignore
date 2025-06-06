@@ -1,0 +1,8 @@
+node_modules/
+.env 
+# Node dependencies
+node_modules
+
+# Session data
+ig-session.json
+/**/

@@ -1,0 +1,28 @@
+<!-- HTML template for SigmaQuoteBot --> 
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { margin: 0; font-family: 'Montserrat', sans-serif; }
+    .container { width: 1080px; height: 1080px; position: relative; display: flex; justify-content: center; align-items: center; text-align: center; }
+    .background { width: 100%; height: 100%; object-fit: cover; position: absolute; filter: brightness(0.4) grayscale(0.2); }
+    .content { position: relative; z-index: 2; color: white; padding: 60px; }
+    .quote { font-size: 64px; font-weight: 700; line-height: 1.2; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
+    .author { margin-top: 30px; font-size: 32px; font-weight: 300; font-style: italic; }
+    .watermark { position: absolute; bottom: 20px; right: 20px; color: rgba(255, 255, 255, 0.4); font-size: 18px; z-index: 3; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <!-- Using a placeholder for the image URL is much more reliable -->
+    <img id="bg-image" class="background" src="IMAGE_URL_PLACEHOLDER" />
+    <div class="content">
+      <!-- Using placeholders for text content -->
+      <p id="quote-text" class="quote">QUOTE_PLACEHOLDER</p>
+      <p id="author-text" class="author">AUTHOR_PLACEHOLDER</p>
+    </div>
+    <div class="watermark">@your_insta_handle</div>
+  </div>
+</body>
+</html>
