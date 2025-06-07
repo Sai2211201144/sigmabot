@@ -16,4 +16,4 @@ jobs:
           IG_USERNAME: ${{ secrets.IG_USERNAME }}
           IG_PASSWORD: ${{ secrets.IG_PASSWORD }}
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
-          YOUR_HANDLE: '@your_insta_handle' # Or put this in secrets
+          YOUR_HANDLE: '@thesigmacodex1'
