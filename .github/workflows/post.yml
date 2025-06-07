@@ -1,3 +1,4 @@
+# THIS IS THE CORRECT, SIMPLE WORKFLOW. IT DOES NOT MENTION PUPPETEER.
 name: 'SigmaQuote Instagram Poster'
 
 on:
@@ -18,17 +19,13 @@ jobs:
           node-version: '18'
 
       - name: Install Dependencies
-        # This will now install jimp and csv-parse from your updated package.json
         run: npm install
-
-      # NOTICE: The puppeteer-headful action has been COMPLETELY REMOVED.
 
       - name: Run the Post Script
         run: node index.js
         env:
-          # These are all the secrets your new script needs to work
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           IG_USERNAME: ${{ secrets.IG_USERNAME }}
           IG_PASSWORD: ${{ secrets.IG_PASSWORD }}
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
-          YOUR_HANDLE: '@thesigmacodex1' # It's good practice to make this a secret too!
+          YOUR_HANDLE: '@thesigmacodex1'
