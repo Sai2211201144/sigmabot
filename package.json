@@ -13,7 +13,6 @@
     "dotenv": "^16.5.0",
     "instagram-private-api": "^1.46.1",
     "pexels": "^1.4.0",
-    "puppeteer": "^24.10.0",
     "rss-parser": "^3.13.0"
   },
   "description": ""
