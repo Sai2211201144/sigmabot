@@ -1,6 +1,5 @@
 require('dotenv').config(); 
 // Forcing a new commit to sync project structure
-const puppeteer = require('puppeteer');
 // ... rest of the file
 const { createClient } = require('pexels');
 const { IgApiClient } = require('instagram-private-api');
